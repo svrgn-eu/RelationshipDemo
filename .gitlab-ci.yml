@@ -33,7 +33,6 @@ test:
   - dotnet test "src/$PROJECT_NAME.sln" --nologo -c Release /p:Platform="Any CPU"
   dependencies:
   - build
-  - code-quality
   allow_failure: true
 github-sync:
   tags:
@@ -53,7 +52,6 @@ github-sync:
   - echo "Successfully synchronized to GitHub repository"
   dependencies:
   - build
-  - code-quality
   - test
   rules:
     - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master"
