@@ -1,0 +1,61 @@
+variables:
+  PROJECT_NAME: RelationshipDemo
+  PROJECT_RESULTS_NAME: RelationshipDemo
+before_script:
+  - echo "starting build for $PROJECT_NAME"
+  - echo "Restoring NuGet Packages..."
+  - dotnet restore "src/$PROJECT_NAME.sln"
+stages:
+  - build
+  - test
+  - github-sync
+build:
+  tags:
+  - c#
+  - windows
+  stage: build
+  script:
+  - echo "Release build..."
+  #- dotnet build "src/$PROJECT_NAME.sln" --nologo -c Release /p:Platform="Any CPU"
+  - dotnet build "src/$PROJECT_NAME/$PROJECT_NAME.csproj" --nologo -c Release /p:Platform="Any CPU"
+  artifacts:
+    paths:
+      - src/$PROJECT_RESULTS_NAME/bin/Release/**
+    name: "Build Results"
+  allow_failure: false
+test:
+  tags:
+  - c#
+  - windows
+  stage: test
+  script:
+  - echo "starting tests"
+  - dotnet test "src/$PROJECT_NAME.sln" --nologo -c Release /p:Platform="Any CPU"
+  dependencies:
+  - build
+  - code-quality
+  allow_failure: true
+github-sync:
+  tags:
+  - c#
+  - windows
+  stage: github-sync
+  script:
+  - echo "Synchronizing source code to GitHub..."
+  - git config user.email "michael.kolb@svrgn.eu"
+  - git config user.name "Michael Kolb"
+  - git remote add github https://$GITHUB_PAT@github.com/$GITHUB_REPO_OWNER/$GITHUB_REPO_NAME.git || git remote set-url github https://$GITHUB_PAT@github.com/$GITHUB_REPO_OWNER/$GITHUB_REPO_NAME.git
+  - git fetch github
+  - git checkout -B main
+  - git add .
+  - git commit -m "Sync from GitLab CI - Build $CI_PIPELINE_ID" || echo "No changes to commit"
+  - git push github main --force
+  - echo "Successfully synchronized to GitHub repository"
+  dependencies:
+  - build
+  - code-quality
+  - test
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master"
+    - when: on_success
+  allow_failure: false
