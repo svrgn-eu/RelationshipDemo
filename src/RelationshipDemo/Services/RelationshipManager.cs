@@ -1,4 +1,5 @@
 using RelationshipDemo.Classes;
+using RelationshipDemo.Contracts;
 using RelationshipDemo.Enums;
 using System;
 using System.Collections.Generic;
@@ -8,22 +9,22 @@ namespace RelationshipDemo.Services
 {
     public class RelationshipManager
     {
-        private List<Person> _people = new List<Person>();
+        private List<IRelationshipParticipant> _participants = new List<IRelationshipParticipant>();
         private List<Relationship> _allRelationships = new List<Relationship>();
 
-        public void AddPerson(Person person)
+        public void AddParticipant(IRelationshipParticipant participant)
         {
-            if (!_people.Contains(person))
+            if (!_participants.Contains(participant))
             {
-                _people.Add(person);
+                _participants.Add(participant);
             }
         }
 
-        public void AddRelationship(Person from, Person to, RelationshipType type, RelationshipQuality quality)
+        public void AddRelationship(IRelationshipParticipant from, IRelationshipParticipant to, RelationshipType type, RelationshipQuality quality)
         {
             // Stelle sicher, dass beide Personen registriert sind
-            AddPerson(from);
-            AddPerson(to);
+            AddParticipant(from);
+            AddParticipant(to);
 
             // Prüfe, ob die Beziehung bereits existiert
             if (GetRelationship(from, to) != null)
@@ -43,17 +44,17 @@ namespace RelationshipDemo.Services
 
         public IEnumerable<Relationship> GetAllRelationships() => _allRelationships.AsReadOnly();
 
-        public IEnumerable<Relationship> GetOutgoingRelationships(Person person)
+        public IEnumerable<Relationship> GetOutgoingRelationships(IRelationshipParticipant person)
         {
             return _allRelationships.Where(r => r.From == person);
         }
 
-        public IEnumerable<Relationship> GetIncomingRelationships(Person person)
+        public IEnumerable<Relationship> GetIncomingRelationships(IRelationshipParticipant person)
         {
             return _allRelationships.Where(r => r.To == person);
         }
 
-        public IEnumerable<Relationship> GetAllRelationshipsInvolving(Person person)
+        public IEnumerable<Relationship> GetAllRelationshipsInvolving(IRelationshipParticipant person)
         {
             return _allRelationships.Where(r => r.From == person || r.To == person);
         }
@@ -78,17 +79,17 @@ namespace RelationshipDemo.Services
             return mutualPairs;
         }
 
-        public Relationship GetRelationship(Person from, Person to)
+        public Relationship GetRelationship(IRelationshipParticipant from, IRelationshipParticipant to)
         {
             return _allRelationships.FirstOrDefault(r => r.From == from && r.To == to);
         }
 
-        public IEnumerable<Person> GetAllPeople() => _people.AsReadOnly();
+        public IEnumerable<IRelationshipParticipant> GetAllParticipants() => _participants.AsReadOnly();
 
         public int TotalRelationships => _allRelationships.Count;
-        public int TotalPeople => _people.Count;
+        public int TotalPeople => _participants.Count;
 
-        public void RemoveRelationship(Person from, Person to)
+        public void RemoveRelationship(IRelationshipParticipant from, IRelationshipParticipant to)
         {
             var relationship = GetRelationship(from, to);
             if (relationship != null)
@@ -97,7 +98,7 @@ namespace RelationshipDemo.Services
             }
         }
 
-        public void UpdateRelationshipQuality(Person from, Person to, RelationshipQuality newQuality)
+        public void UpdateRelationshipQuality(IRelationshipParticipant from, IRelationshipParticipant to, RelationshipQuality newQuality)
         {
             var relationship = GetRelationship(from, to);
             if (relationship != null)

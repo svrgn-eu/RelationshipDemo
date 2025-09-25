@@ -1,3 +1,4 @@
+using RelationshipDemo.Contracts;
 using RelationshipDemo.Enums;
 using System;
 using System.Collections.Generic;
@@ -7,8 +8,8 @@ namespace RelationshipDemo.Classes
 {
     public class Relationship
     {
-        public Person From { get; set; }
-        public Person To { get; set; }
+        public IRelationshipParticipant From { get; set; }
+        public IRelationshipParticipant To { get; set; }
         public RelationshipType Type { get; set; }
         public RelationshipQuality Quality { get; set; }
         public DateTime StartDate { get; set; }

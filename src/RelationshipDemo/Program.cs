@@ -1,4 +1,5 @@
-﻿using RelationshipDemo.Enums;
+﻿using RelationshipDemo.Contracts;
+using RelationshipDemo.Enums;
 using RelationshipDemo.Services;
 using System;
 using System.Collections.Generic;
@@ -10,25 +11,25 @@ namespace RelationshipDemo
     {
         public static void Main()
         {
-            Console.WriteLine("=== Relationship-Generator with RelationshipManager ===\n");
+            Console.WriteLine("=== Relationship Generator with RelationshipManager ===\n");
 
             // Netzwerk generieren
             var manager = RelationshipGenerator.GenerateRandomNetwork();
 
-            Console.WriteLine("Generated Persons:");
-            foreach (var person in manager.GetAllPeople())
+            Console.WriteLine("Generated Participants:");
+            foreach (IRelationshipParticipant participant in manager.GetAllParticipants())
             {
-                Console.WriteLine($"- {person.Name} ({person.Email})");
+                Console.WriteLine($"- {participant.Name} ({participant.Email})");
             }
 
-            Console.WriteLine($"Network Overview: {manager.TotalPeople} Persons, {manager.TotalRelationships} Relations");
+            Console.WriteLine($"Network Overview: {manager.TotalPeople} Participants, {manager.TotalRelationships} Relations");
 
             // Alle Beziehungen anzeigen (gruppiert nach Person)
             Console.WriteLine("\n=== All Relations (outbound) ===");
-            foreach (var person in manager.GetAllPeople())
+            foreach (IRelationshipParticipant participant in manager.GetAllParticipants())
             {
-                var outgoingRels = manager.GetOutgoingRelationships(person).OrderBy(r => r.To.Name);
-                Console.WriteLine($"\n{person.Name}s outbound Relations:");
+                var outgoingRels = manager.GetOutgoingRelationships(participant).OrderBy(r => r.To.Name);
+                Console.WriteLine($"\n{participant.Name}s outbound Relations:");
                 foreach (var rel in outgoingRels)
                 {
                     Console.WriteLine($"  {rel}");
@@ -107,19 +108,19 @@ namespace RelationshipDemo
 
             // Demo der Manager-Funktionen
             Console.WriteLine("\n=== Manager Functions Demo ===");
-            var samplePerson = manager.GetAllPeople().First();
+            IRelationshipParticipant sampleParticipant = manager.GetAllParticipants().First();
 
-            Console.WriteLine($"\n{samplePerson.Name}s complete Relations:");
-            Console.WriteLine($"  Outbound: {manager.GetOutgoingRelationships(samplePerson).Count()}");
-            Console.WriteLine($"  Inbound: {manager.GetIncomingRelationships(samplePerson).Count()}");
-            Console.WriteLine($"  all involved: {manager.GetAllRelationshipsInvolving(samplePerson).Count()}");
+            Console.WriteLine($"\n{sampleParticipant.Name}s complete Relations:");
+            Console.WriteLine($"  Outbound: {manager.GetOutgoingRelationships(sampleParticipant).Count()}");
+            Console.WriteLine($"  Inbound: {manager.GetIncomingRelationships(sampleParticipant).Count()}");
+            Console.WriteLine($"  all involved: {manager.GetAllRelationshipsInvolving(sampleParticipant).Count()}");
 
             // Zeige eingehende Beziehungen
-            var incomingRels = manager.GetIncomingRelationships(samplePerson).Take(3);
-            Console.WriteLine($"First 3 inbound Relations for {samplePerson.Name}:");
+            var incomingRels = manager.GetIncomingRelationships(sampleParticipant).Take(3);
+            Console.WriteLine($"First 3 inbound Relations for {sampleParticipant.Name}:");
             foreach (var rel in incomingRels)
             {
-                Console.WriteLine($"  {rel.From.Name} -> {samplePerson.Name}: {rel.Quality.GetOverallSentiment()}");
+                Console.WriteLine($"  {rel.From.Name} -> {sampleParticipant.Name}: {rel.Quality.GetOverallSentiment()}");
             }
         }
     }

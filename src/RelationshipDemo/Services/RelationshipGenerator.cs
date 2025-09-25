@@ -1,4 +1,5 @@
 using RelationshipDemo.Classes;
+using RelationshipDemo.Contracts;
 using RelationshipDemo.Enums;
 using System;
 using System.Collections.Generic;
@@ -23,28 +24,28 @@ namespace RelationshipDemo.Services
             var manager = new RelationshipManager();
 
             // Personen erstellen
-            var people = new List<Person>();
+            List<IRelationshipParticipant> participants = new List<IRelationshipParticipant>();
             for (int i = 0; i < Names.Length; i++)
             {
-                var person = new Person
+                IRelationshipParticipant person = new Person
                 {
                     Id = i + 1,
                     Name = Names[i],
                     Email = $"{Names[i].ToLower()}@example.com"
                 };
-                people.Add(person);
-                manager.AddPerson(person);
+                participants.Add(person);
+                manager.AddParticipant(person);
             }
 
             // Beziehungen generieren
-            foreach (var person in people)
+            foreach (var person in participants)
             {
                 var relationshipCount = random.Next(3, 8);
-                var targets = people.Where(p => p != person)
+                var targets = participants.Where(p => p != person)
                                     .OrderBy(x => random.Next())
                                     .Take(relationshipCount);
 
-                foreach (var target in targets)
+                foreach (IRelationshipParticipant target in targets)
                 {
                     manager.AddRelationship(person, target, GetRandomRelationshipType(), GenerateRandomQuality());
                 }

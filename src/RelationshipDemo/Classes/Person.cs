@@ -1,10 +1,11 @@
+using RelationshipDemo.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace RelationshipDemo.Classes
 {
-    public class Person
+    public class Person : IRelationshipParticipant
     {
         public int Id { get; set; }
         public string Name { get; set; }
