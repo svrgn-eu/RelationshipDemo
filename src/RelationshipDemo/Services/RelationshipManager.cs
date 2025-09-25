@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace RelationshipDemo.Services
 {
-    public class RelationshipManager
+    public class RelationshipManager : IRelationshipManager
     {
         private List<IRelationshipParticipant> _participants = new List<IRelationshipParticipant>();
         private List<Relationship> _allRelationships = new List<Relationship>();

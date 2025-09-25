@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace RelationshipDemo.Services
 {
-    public class RelationshipGenerator
+    public class RelationshipGenerator : IRelationshipGenerator
     {
         private static readonly Random random = new Random();
 
